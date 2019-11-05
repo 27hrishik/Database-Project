@@ -6,13 +6,13 @@
             <div class="field">
             <label class="label">Username</label>
             <div class="control">
-                <input class="input" type="text" v-model="username" placeholder="e.g Alex Smith">
+                <input class="input" required type="text" v-model="obj.username" placeholder="e.g alex123">
             </div>
             </div>
             <div class="field">
             <label class="label">password</label>
             <div class="control">
-                <input class="input" type="password" v-model="password" placeholder="e.g ax123#ads">
+                <input class="input" type="password" v-model="obj.password" placeholder="e.g ax123#ads">
             </div>
             </div>
         </div>
@@ -21,37 +21,44 @@
             <div class="field">
             <label class="label">Name</label>
             <div class="control">
-                <input class="input" type="text" v-model="customerName" placeholder="e.g Alex Smith">
+                <input class="input" type="text" v-model="obj.customerName" placeholder="e.g Alex Smith">
             </div>
             </div>
             <div class="field">
             <label class="label">Mobile No.</label>
             <div class="control">
-                <input class="input" type="text" v-model="mobile" placeholder="e.g ax123#ads">
+                <input class="input" type="number" v-model="obj.mobile" placeholder="e.g 72594">
             </div>
             </div>
             <div class="field">
             <label class="label">Email</label>
             <div class="control">
-                <input class="input" type="text" v-model="email" placeholder="e.g alex.smith@gmail.com">
+                <input class="input" type="text" v-model="obj.email" placeholder="e.g alex.smith@gmail.com">
             </div>
             </div>
             <div class="field">
             <label class="label">Address</label>
             <div class="control">
-                <input class="input" type="text" v-model="mobile" placeholder="e.g 1st Block,NY">
+                <input class="input" type="text" v-model="obj.address" placeholder="e.g 1st Block,NY">
             </div>
             </div>
-            <div class="field">
-            <label class="label">Gender</label>
-            <div class="control">
-                <input class="input" type="text" v-model="gender" placeholder="e.g ax123#ads">
-            </div>
+           <div class="field">
+               <label class="label">Gender</label>
+                <div class="control">
+                    <p class="radio">
+                    <input type="radio" v-model="obj.gender" value="M" name="question">
+                    Male
+                    </p>
+                    <p class="radio">
+                    <input type="radio" v-model="obj.gender" value="F" name="question">
+                    Female
+                    </p>
+                </div>
             </div>
             <div class="field">
             <label class="label">Age</label>
             <div class="control">
-                <input class="input" type="text" v-model="age" placeholder="e.g ax123#ads">
+                <input class="input" type="number" v-model="obj.age" placeholder="e.g 18">
             </div>
             </div>
             <div class="field">
@@ -74,26 +81,27 @@ export default {
     name:'',
     data:function(){
         return{
-            customerName:'',
-            mobile:"",
-            email:"",
-            address:"",
-            gender:"",
-            age:"",
-            username:"",
-            password:""
+            obj:{
+                customerName:'',
+                mobile:"",
+                email:"",
+                address:"",
+                gender:"",
+                age:"",
+                username:"",
+                password:""
+            }
         }
     },
     methods:{
         createAccount:function(){
-            window.Axios.post('/user',{
-              updatedObj:this.updated
-            })
+            window.Axios.post('/user',this.obj)
             .then((response)=>{
-                window.console.log(response.data);
+                this.$router.push({name:'home'});
+                window.alert(response.data);
             })
             .catch((error)=>{
-                window.console.log(error);
+                window.alert(error.response.data);
             })
             .finally(()=>{
             });     

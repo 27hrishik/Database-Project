@@ -118,30 +118,30 @@ export default {
         updatePassword:function(){
             window.Axios.post('/user/account/password',{
               username:this.old.username,  
-              updateObj:this.updatedPassword
+              oldPassword:this.updatedPassword.oldPassword,
+              newPassword:this.updatedPassword.newPassword
             })
             .then((response)=>{
                 this.isPasswordWindow = false;
+                this.updatedPassword = {oldPassword:'',newPassword:''};
                 window.console.log(response.data);
             })
             .catch((error)=>{
                 this.updatePassword = {oldPassword:"",newPassword:""};
                 window.console.log(error);
-            })
-            .finally(()=>{
-            });       
+            });      
         },
         updateDetail:function(){
             window.Axios.post('/user/account/',{
               updatedObj:this.updated
             })
             .then((response)=>{
-                window.console.log(response.data);
+                this.old = response.data;
+                this.updated = Object.assign({},this.old);
+                window.alert("Account Details Updated ");
             })
             .catch((error)=>{
-                window.console.log(error);
-            })
-            .finally(()=>{
+                window.alert(error.response.data);
             });
         },
         getAccountDetail:function(){
@@ -156,9 +156,7 @@ export default {
             })
             .catch((error)=>{
                 this.$router.push({name:'home'});
-                window.console.log(error);
-            })
-            .finally(()=>{
+                window.alert(error.response.data);
             });
         },
         deleteAccount:function(){
@@ -167,16 +165,15 @@ export default {
               username:this.$route.params.username,
             }})
             .then((response)=>{
-                window.console.log(response.data);
+                this.$parent.performLogout();
+                window.alert(response.data);
             })
             .catch((error)=>{
                 window.console.log(error);
-            })
-            .finally(()=>{
             });
         },
         resetDetails:function(){
-            this.updated = this.old;
+            this.updated = Object.assign({},this.old);
         }
     }
 }

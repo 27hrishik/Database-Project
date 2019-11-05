@@ -1,8 +1,8 @@
-var express = require('express');
+const express = require('express');
+const userRoute = require('./routes/user');
+const operatorRoute = require('./routes/operator');
+const app = express();
 
-var requestHandler = require('./routes/requesthandler');
-
-var app = express();
 const port = process.env.port || 3000;
 
 //setting routes
@@ -13,7 +13,9 @@ app.use((req, res, next)=> {
   res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS'); 
   next(); 
 });
-app.use('/', requestHandler);
+app.use('/user', userRoute);
+app.use('/operator',operatorRoute);
+
 
 app.listen(port,()=>{
   console.log(`Server Running On Port ${port}...`);

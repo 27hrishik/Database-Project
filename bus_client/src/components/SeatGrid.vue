@@ -1,7 +1,7 @@
 <template>
     <div class="box">
         <div class="columns" v-for="i in rows" :key="i">
-             <button class="column button" :class="{'is-success':isSelected(i,j),'is-dark':isBooked(i,j)}" :disabled="isBooked(i,j)" v-for="j in columns" :key="j" v-model="computeSeatIndex(i,j)" @click="passSelectedSeat($event)">
+             <button class="column button" :class="{'is-success':isSelected(i,j),'is-dark':isBooked(i,j)}" :disabled="isBooked(i,j)" v-for="j in columns" :key="j" :value="computeSeatIndex(i,j)" @click="passSelectedSeat($event)">
             {{computeSeatIndex(i,j)}}  
             </button>
         </div>

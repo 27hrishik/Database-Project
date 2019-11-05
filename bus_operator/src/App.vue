@@ -25,7 +25,7 @@
         <div class="buttons">
           <div class="navbar-item has-dropdown" v-bind:class="{'is-hoverable':isLoggedIn}">
         <a v-bind:class="{'navbar-link':isLoggedIn,'button is-primary':!isLoggedIn}" @click="showLoginPage">
-          {{isLoggedIn?loggedOperatorname:"Log In"}}
+          {{isLoggedIn?loggedOperatorUsername:"Log In"}}
         </a>
         <div class="navbar-dropdown">
           <a class="navbar-item" @click="goToBuses">
@@ -53,7 +53,7 @@
       <h1><b>Log In</b></h1>
       <div class="field">
         <p class="control has-icons-left has-icons-right">
-          <input class="input" type="email" placeholder="Operator Username">
+          <input class="input" type="text" v-model="loginDetails.operatorUsername" placeholder="Operator Username">
           <span class="icon is-small is-left">
             <i class="fas fa-user"></i>
           </span>
@@ -64,7 +64,7 @@
       </div>
       <div class="field">
         <p class="control has-icons-left">
-          <input class="input" type="password" placeholder="Password">
+          <input class="input" type="password" v-model="loginDetails.password" placeholder="Password">
           <span class="icon is-small is-left">
             <i class="fas fa-lock"></i>
           </span>
@@ -100,9 +100,9 @@ export default {
   return {
     isLoginWindow : false,
     isLoggedIn : false,
-    loggedOperatorname : "default",
+    loggedOperatorUsername : "default",
     loginDetails:{
-      operatorName:"",
+      operatorUsername:"",
       password:""
     }
   }
@@ -116,9 +116,21 @@ export default {
       this.isLoginWindow = false;
     },
     performLogin:function(){
-      this.isLoggedIn = true;
-      this.isLoginWindow = false;
-      //window.console.log("sending login request");
+     window.Axios.get('/operator/login',{
+            params:this.loginDetails
+      })
+      .then((response)=>{
+        this.isLoggedIn = true;
+        this.isLoginWindow = false;
+        this.loggedOperatorUsername = response.data.operatorUsername;
+        this.loginDetails = {operatorUsername:"",password:""};
+        this.$router.push({name:'buses',params:{operatorName:this.loggedOperatorUsername}});
+        window.console.log(response.data);
+      })
+      .catch((error)=>{
+          this.loginDetails = {operatorUsername:"",password:""};
+          window.alert(error.response.data);
+      });
     },
     performLogOut:function(){
       this.isLoggedIn = false;
@@ -126,10 +138,10 @@ export default {
       this.$router.replace({name:'home'});
     },
     goToBuses:function(){
-      this.$router.push({name:'buses',params:{operatorName:this.loggedOperatorname}});
+      this.$router.push({name:'buses',params:{operatorName:this.loggedOperatorUsername}});
     },
     accountDetail:function(){
-      this.$router.push({name:'account',params:{username:this.loggedOperatorname}});
+      this.$router.push({name:'account',params:{operatorName:this.loggedOperatorUsername}});
     },
     goToCreateOperatorAccount:function(){
       this.$router.push({name:'operator'});

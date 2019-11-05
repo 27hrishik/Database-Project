@@ -117,10 +117,7 @@ export default {
     },
     performLogin:function(){
       window.Axios.get('/user/login',{
-            params:{
-              username:this.loginDetails.username,
-              password:this.loginDetails.password
-          }
+            params:this.loginDetails
       })
       .then((response)=>{
         this.isLoggedIn = true;
@@ -132,7 +129,7 @@ export default {
       })
       .catch((error)=>{
           this.loginDetails = {username:"",password:""};
-          window.console.log(error);
+          window.alert(error.response.data);
       });
     },
     performLogOut:function(){
