@@ -21,11 +21,10 @@ const routes = [
   {path:'/about',name:'about',component:About},
   {path:'/contact',name:'contact',component:Contact},
   {path:'/user/',name:'createAccount',component:CreateAccount},
-  {path:'/user/:username',name:'user',component:SearchBus},
-  {path:'/buses/:busDetails',name:'buses',component:SearchedBusList},
-  {path:'/buses/:busDetails/:ticketDetails',name:'ticket',component:BookTicket},
-  {path:'/user/:username/booking',name:'booking',component:YourBooking},
-  {path:'/user/:username/account',name:'account',component:AccountDetail},
+  {path:'/buses/',name:'buses',component:SearchedBusList},
+  {path:'/buses/ticket',name:'ticket',component:BookTicket},
+  {path:'/user/booking',name:'booking',component:YourBooking},
+  {path:'/user/account',name:'account',component:AccountDetail},
 ]
 
 var router = new VueRouter({

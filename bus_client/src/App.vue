@@ -15,7 +15,7 @@
 
   <div id="navbarMenu" class="navbar-menu is-active">
     <div class="navbar-start">
-      <router-link class="navbar-item" :to="goToHome">Home</router-link>
+      <router-link class="navbar-item" to="/">Home</router-link>
       <router-link class="navbar-item" to='/about'>About</router-link>
       <router-link class="navbar-item" to='/contact'>Contact Us</router-link>
     </div>
@@ -29,7 +29,7 @@
         </a>
         <div class="navbar-dropdown">
           <a class="navbar-item" @click="goToBooking">
-           Your Booking
+           Bookings
           </a>
           <a class="navbar-item" @click="accountDetail">
             Account
@@ -101,6 +101,8 @@ export default {
     isLoginWindow : false,
     isLoggedIn : false,
     loggedUsername : "default",
+    search:null,
+    ticket:null,
     loginDetails:{
       username:"",
       password:""
@@ -124,7 +126,6 @@ export default {
         this.isLoginWindow = false;
         this.loggedUsername = response.data.username;
         this.loginDetails = {username:"",password:""};
-        this.$router.push({name:'user',params:{username:this.loggedUsername}});
         window.console.log(response.data);
       })
       .catch((error)=>{
@@ -138,19 +139,14 @@ export default {
       this.$router.replace({name:'home'});
     },
     goToBooking:function(){
-      this.$router.push({name:'booking',params:{username:this.loggedUsername}});
+      this.$router.push({name:'booking'});
     },
     accountDetail:function(){
-      this.$router.push({name:'account',params:{username:this.loggedUsername}});
+      this.$router.push({name:'account'});
     },
     goToCreateAccount:function(){
         this.$router.push({name:'createAccount'});
         this.isLoginWindow = false;
-    }
-  },
-  computed:{
-    goToHome:function(){
-      return this.isLoggedIn?`/user/${this.loggedUsername}`:'/';
     }
   }
 }

@@ -1,43 +1,37 @@
 <template>
     <div class='box'>
-        <h1><strong>Ticket Details</strong></h1> 
-        <p><strong>Name : </strong>{{customerName}}<br>
-        <strong>Mobile No : </strong>{{mobile}}<br>
-        <strong>Email : </strong><br>
-        <strong>Date Of Journey : </strong>{{dateOfJourney}}<br>
-        <strong>From : </strong>{{from}} <br>
-        <strong>To : </strong>{{to}} <br> 
-        </p>
-        <hr>
         <h1><strong>Bus Details</strong></h1> 
         <p>
             <strong>Bus Name : </strong>{{busObj.busName}}<br>
             <strong>Bus Type : </strong>{{busObj.type}}<br>
-            <strong>Pick-Up: </strong>{{busObj.pickUp}}<br>
+            <strong>Date Of Journey : </strong>{{dateOfJourney}}<br>
+            <strong>From : </strong>{{from}} <br>
+            <strong>To : </strong>{{to}} <br> 
+            <strong>Pick-Up: </strong>{{busObj.pickup}}<br>
             <strong>Drop : </strong>{{busObj.drop}}<br>
             <strong>Departure Time: </strong>{{busObj.deptTime}}<br>
             <strong>Arrival Time : </strong>{{busObj.arvlTime}} <br>
-            <strong>Price : </strong>{{busObj.price * seatNo.length}} <br>
+            <strong>Price : </strong>{{busObj.price * passengerDetails.length}} <br>
         </p> 
         <hr>
         <h1><strong>Add Passenger Details</strong></h1>
-        <div class="box" v-for="(seat,index) in seatNo" :key="index">
+        <div class="box" v-for="(passenger,index) in passengerDetails" :key="index">
             <span>
-                <strong>{{index + 1}}.</strong><b>   Seat No :</b> {{seat}} 
+                <strong>{{index + 1}}.</strong><b>   Seat No :</b> {{passenger.seatno}} 
                 <div >
                     <div >
-                        <input class="input" type="text" placeholder="Name">
-                        <input class="input" type="text" placeholder="Age">
+                        <input class="input" v-model='passenger.name' type="text" placeholder="Name">
+                        <input class="input" v-model='passenger.age' type="number" placeholder="Age">
                     </div>
                 </div>
                 <div class="field">
                     <div class="control">
                         <p class="radio">
-                        <input type="radio" name="question">
+                        <input type="radio" v-model='passenger.gender' value='M' name="question">
                         Male
                         </p>
                         <p class="radio">
-                        <input type="radio" name="question">
+                        <input type="radio" v-model='passenger.gender' value='F' name="question">
                         Female
                         </p>
                     </div>
@@ -68,24 +62,39 @@ export default {
     data:function(){
         return {
             paymentWindow:false,
-            customerName:'abac',
-            mobile:'932',
-            dateOfJourney:'2019-12-17',
-            from:"bng",
-            to:"mys",
+            dateOfJourney:'',
+            from:"",
+            to:"",
             busObj:{
                     id:1,
-                    busName:"SRS",
-                    pickUp:"Majestic",
-                    drop:"JP Nagar",
-                    deptTime:"19:30",
-                    arvlTime:"06:30",
-                    type:"NON-AC SLEEPER",
-                    price:"970"
+                    busName:"",
+                    pickup:"",
+                    drop:"",
+                    deptTime:"",
+                    arvlTime:"",
+                    type:"",
+                    price:0
             },
-            seatNo:["A3","A4"],
             passengerDetails:[]
         }
+    },
+    created:function(){
+        let obj = this.$parent.ticket;
+        window.console.log(obj);
+        this.$parent.ticket = null;
+        this.busObj = obj.bus[0];
+        this.from = this.$parent.search.source;
+        this.to = this.$parent.search.destination;
+        this.dateOfJourney = obj.dateOfJourney;
+        this.passengerDetails = []
+        obj.seats.forEach((value)=>{
+        this.passengerDetails.push({
+                seatno:value,
+                name:'',
+                age:Number,
+                gender:''
+            });
+        });
     },
     methods:{
         confirmTicket:function(){
@@ -93,9 +102,20 @@ export default {
         },
         paymentSuccessful:function(){
             this.paymentWindow = false;
-            //go to Home successful
+            window.Axios.post('/user/buses/ticket',{
+                id:this.busObj.id,
+                username:this.$parent.loggedUsername,
+                dateOfJourney:this.dateOfJourney,
+                passengers:this.passengerDetails
+            }).then((response)=>{
+                window.alert(response.data);
+                this.$router.go(-1);
+            }).catch((error)=>{
+                window.alert(error.response.data);
+            });
         },
         paymentFailed:function(){
+            window.alert('Payment Failed');
             this.paymentWindow = false;
             //go back Failed
         }

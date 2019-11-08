@@ -141,6 +141,7 @@ export default {
             window.Axios.post('/operator/buses',this.busDetail)
             .then((response)=>{
                 window.alert(response.data);
+                this.goToBuses();
             })
             .catch((error)=>{
                 window.alert(error.response.data);

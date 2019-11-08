@@ -42,7 +42,8 @@ export default {
           destination:this.destination,
           dateOfJourney:this.dateOfJourney
         };
-      this.$router.push({name:'buses',params:{busDetails:JSON.stringify(passingObj)}});
+      this.$parent.search = passingObj;  
+      this.$router.push({name:'buses'});
     }
   }
 }

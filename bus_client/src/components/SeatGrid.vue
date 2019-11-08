@@ -1,8 +1,8 @@
 <template>
     <div class="box">
         <div class="columns" v-for="i in rows" :key="i">
-             <button class="column button" :class="{'is-success':isSelected(i,j),'is-dark':isBooked(i,j)}" :disabled="isBooked(i,j)" v-for="j in columns" :key="j" :value="computeSeatIndex(i,j)" @click="passSelectedSeat($event)">
-            {{computeSeatIndex(i,j)}}  
+             <button class="column button" :class="{'is-success':isSelected(i,j),'is-dark':isBooked(i,j)}" :disabled="isBooked(i,j)" v-for="j in columns" :key="j" :value="computeSeatNumber(i,j)" @click="passSelectedSeat">
+            {{computeSeatNumber(i,j)}}  
             </button>
         </div>
     </div>            
@@ -14,35 +14,26 @@ export default {
     props:{
         rows:Number,
         columns:Number,
-        selectedSeats:{
-            type:Array,
-            default:function(){
-                return [];
-            }
-        },
-        bookedSeats:{
-            type:Array,
-            default:function(){
-                return [];
-            }
-        }
+        select:Object
     },
     methods:
     {
-        passSelectedSeat:function(event){
-            //window.console.log("selected seats "+this.selectedSeats);
-            this.$emit("seat-selected",event.target.value);
+        passSelectedSeat:function(){
+            this.$emit("seat-selected",event.currentTarget.value);
         },
         computeSeatIndex:function(i,j){
             return String.fromCharCode(64+i)+j;
         },
+        computeSeatNumber(i,j){
+            return (i-1) * this.columns + j;
+        },
         isSelected:function(i,j){
-            let seatId = this.computeSeatIndex(i,j);
-            return this.selectedSeats.indexOf(seatId)!=-1; 
+            let seatId = this.computeSeatNumber(i,j);
+            return this.select.selectedSeats.indexOf(seatId.toString())!=-1; 
         },
         isBooked:function(i,j){
-            let seatId = this.computeSeatIndex(i,j);
-            return this.bookedSeats.indexOf(seatId)!=-1;
+            let seatId = this.computeSeatNumber(i,j);
+            return this.select.bookedSeats.indexOf(seatId)!=-1;
         }
     }
 }

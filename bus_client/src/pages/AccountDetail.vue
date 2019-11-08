@@ -34,10 +34,17 @@
         </div>
         </div>
         <div class="field">
-        <label class="label">Gender</label>
-        <div class="control">
-            <input class="input" type="text" v-model="updated.gender" :placeholder="old.gender">
-        </div>
+            <label class="label">Gender</label>
+            <div class="control">
+                <p class="radio">
+                <input type="radio" v-model="updated.gender" value="M" name="question">
+                Male
+                </p>
+                <p class="radio">
+                <input type="radio" v-model="updated.gender" value="F" name="question">
+                Female
+                </p>
+            </div>
         </div>
         <div class="field">
         <label class="label">Age</label>
@@ -70,7 +77,7 @@
         <p>New Password</p>
         <input class="input" type="password" v-model="updatedPassword.newPassword" placeholder="Enter New Password">
         <hr>
-        <button class="button is-info" type="submit" @click="updatePassword">Update</button>
+        <button class="button is-info" @click="passUpdate">Update</button>
         </div>
         <button class="modal-close is-large" @click="isPasswordWindow=false" aria-p="close"></button>
         </div> 
@@ -115,7 +122,7 @@ export default {
             if(this.isUpdatable==false)
                 this.updateDetail();
         },
-        updatePassword:function(){
+        passUpdate:function(){
             window.Axios.post('/user/account/password',{
               username:this.old.username,  
               oldPassword:this.updatedPassword.oldPassword,
@@ -124,17 +131,15 @@ export default {
             .then((response)=>{
                 this.isPasswordWindow = false;
                 this.updatedPassword = {oldPassword:'',newPassword:''};
-                window.console.log(response.data);
+                window.alert(response.data);
             })
             .catch((error)=>{
-                this.updatePassword = {oldPassword:"",newPassword:""};
-                window.console.log(error);
+                this.updatedPassword = {oldPassword:"",newPassword:""};
+                window.alert(error.response.data);
             });      
         },
         updateDetail:function(){
-            window.Axios.post('/user/account/',{
-              updatedObj:this.updated
-            })
+            window.Axios.post('/user/account/',this.updated)
             .then((response)=>{
                 this.old = response.data;
                 this.updated = Object.assign({},this.old);
@@ -147,12 +152,12 @@ export default {
         getAccountDetail:function(){
             window.Axios.get('/user/account',{
             params:{
-              username:this.$route.params.username
+              username:this.$parent.loggedUsername
             }})
             .then((response)=>{
                 this.old = response.data;
                 this.updated = Object.assign({},this.old);
-                window.console.log(response.data);
+                //window.console.log(response.data);
             })
             .catch((error)=>{
                 this.$router.push({name:'home'});
@@ -162,10 +167,10 @@ export default {
         deleteAccount:function(){
             window.Axios.delete('/user/account',{
             params:{
-              username:this.$route.params.username,
+              username:this.$parent.loggedUsername,
             }})
             .then((response)=>{
-                this.$parent.performLogout();
+                this.$parent.performLogOut();
                 window.alert(response.data);
             })
             .catch((error)=>{

@@ -112,7 +112,7 @@ router.get('/account', (req, res) =>{
                 res.status(200).json(data);
             }
             else
-                res.status(400).json(data.operatorUsername + '0XXX');        
+                res.status(400).json('Server Error');        
         }    
     }); 
   }
@@ -137,7 +137,8 @@ router.post('/account', (req, res) =>{
         set operator_name = '${data.operatorName}',
         address = '${data.address}',
         email = '${data.email}',
-        mobile = ${data.mobile}`;
+        mobile = ${data.mobile}
+        where operator_user_name = '${data.operatorUsername}'`;
         db.query(sql,(error,result)=>{
             if(error)
                 res.status(400).json(error.message);
@@ -215,7 +216,7 @@ router.post('/buses', (req, res) =>{
             arvlTime:Joi.string(),
             type:Joi.string().min(1).max(10),
             cost:Joi.number(),
-            capacity:Joi.number(),
+            capacity:Joi.number().multiple(3),
             monday:Joi.bool(),
             tuesday:Joi.bool(),
             wednesday:Joi.bool(),
@@ -243,6 +244,97 @@ router.post('/buses', (req, res) =>{
               res.status(200).json('Bus added Successfully');  
       });
     } 
+});
+
+router.get('/buses',(req,res)=>{
+    const schema = Joi.object({
+      operatorUsername:Joi.string().min(1).max(10)
+    });
+    const data = req.query;
+    const check = schema.validate(data);
+    if(check.error)
+    {
+        res.status(400).send(check.error.details[0].message);
+    }
+    else
+    {
+      const sql = `select operator_name from operator where operator_user_name = '${data.operatorUsername}'`;
+      db.query(sql,(err,name)=>{
+        if(err)
+          res.status(400).send(err.message);
+        else
+        {
+          const sql2 = `select bus_id,bus_name,from_city,to_city,dept_time,arvl_time,capacity,bus_type,cost from bus_detail
+          where operator_user_name = '${data.operatorUsername}'`;
+          db.query(sql2,(err,result)=>{
+            if(err)
+              res.status(400).send(err.message);
+            else
+            {
+              const list = []
+              result.forEach((value)=>{
+                list.push({
+                  id:value.bus_id,
+                  busName:value.bus_name,
+                  from:value.from_city,
+                  to:value.to_city,
+                  deptTime:value.dept_time,
+                  arvlTime:value.arvl_time,
+                  capacity:value.capacity,
+                  type:value.bus_type,
+                  price:value.cost
+                });
+              });
+              res.status(200).json({operatorName:name[0].operator_name,listOfBuses:list});
+            }  
+          });
+        }  
+      });
+    }
+});
+
+router.delete('/buses',(req,res)=>{
+  const schema = Joi.object({
+    id:Joi.number()
+  });
+  const data = req.query;
+  const check = schema.validate(data);
+  if(check.error)
+  {
+      res.status(400).send(check.error.details[0].message);
+  }
+  else
+  {
+    const sql = `delete from bus_detail where bus_id = ${data.id}`;
+    db.query(sql,(err,result)=>{
+      if(err)
+        res.status(400).send(err.message);
+      else
+        res.status(200).send(`Bus with id ${data.id} is Successfully Deleted`);  
+    });
+  }
+});
+
+router.post('/buses/availability',(req,res)=>{
+  const schema = Joi.object({
+    id:Joi.number()
+  });
+  const data = req.body;
+  const check = schema.validate(data);
+  if(check.error)
+  {
+      res.status(400).send(check.error.details[0].message);
+  }
+  else
+  {
+    const sql = `call updateAvailability(${data.id})`;
+    db.query(sql,(err,result)=>{
+      if(err)
+        res.status(400).send(err.message);
+      else
+        res.status(200).send(`Bus id: ${data.id} Availablity Updated for 30 Days`);  
+    });
+  }
 });
 
 module.exports = router;
